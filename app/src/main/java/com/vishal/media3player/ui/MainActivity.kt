@@ -23,7 +23,20 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FolderOpen
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.padding
 
 class MainActivity : ComponentActivity() {
 
@@ -56,9 +69,10 @@ class MainActivity : ComponentActivity() {
                 ) {
                     playerViewModel = viewModel()
 
-                    VideoScreen(playerViewModel = playerViewModel, onPickVideo = {
-                        pickVideoLauncher.launch(arrayOf("video/*"))
-                    })
+                    VideoScreen(
+                        playerViewModel = playerViewModel,
+                        onPickVideo = { pickVideoLauncher.launch(arrayOf("video/*")) }
+                    )
                 }
             }
         }
@@ -66,24 +80,60 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun VideoScreen(playerViewModel: PlayerViewModel, onPickVideo: () -> Unit) {
+fun VideoScreen(
+    playerViewModel: PlayerViewModel,
+    onPickVideo: () -> Unit
+) {
     val hasVideoLoaded by playerViewModel.hasVideoLoaded.collectAsState()
+    val areControlsVisible by playerViewModel.areControlsVisible.collectAsState()
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        if (!hasVideoLoaded) {
-            Button(onClick = onPickVideo) {
-                Text("Select Video from Storage")
-            }
-        }
-
+    Box(modifier = Modifier.fillMaxSize()) {
         VideoPlayer(
             player = playerViewModel.player,
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
+            modifier = Modifier.fillMaxSize(),
+            onControllerVisibilityChanged = { visible ->
+                playerViewModel.setControlsVisibility(visible)
+            }
         )
+
+        AnimatedVisibility(
+            visible = (areControlsVisible || !hasVideoLoaded),
+            enter = fadeIn(animationSpec = tween(durationMillis = 300)),
+            exit = fadeOut(animationSpec = tween(durationMillis = 300))
+        ) {
+            if (!hasVideoLoaded) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.8f)),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center
+                ) {
+                    Button(
+                        onClick = onPickVideo,
+                        modifier = Modifier.size(width = 200.dp, height = 60.dp)
+                    ) {
+                        Text("Select Video", style = MaterialTheme.typography.titleLarge)
+                    }
+                }
+            } else {
+
+                IconButton(
+                    onClick = onPickVideo,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(bottom = 16.dp, end = 60.dp)
+                        .size(48.dp)
+                        .background(Color.Black.copy(alpha = 0.5f), MaterialTheme.shapes.small)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.FolderOpen,
+                        contentDescription = "Select File",
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
+        }
     }
 }
