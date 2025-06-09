@@ -32,7 +32,7 @@ class PlayerViewModel(application: Application, private val savedStateHandle: Sa
             player.seekTo(playbackPosition)
             player.playWhenReady = playWhenReady
             player.prepare()
-            _hasVideoLoaded.value = true // Update state when a video is loaded initially
+            _hasVideoLoaded.value = true
         }
     }
 
@@ -47,7 +47,7 @@ class PlayerViewModel(application: Application, private val savedStateHandle: Sa
         player.setMediaItem(mediaItem)
         player.prepare()
         player.play()
-        _hasVideoLoaded.value = true // Update state when a new video is played
+        _hasVideoLoaded.value = true
     }
 
     fun setMediaItem(uri: Uri, startPosition: Long = 0L, playWhenReady: Boolean = true) {
@@ -60,7 +60,7 @@ class PlayerViewModel(application: Application, private val savedStateHandle: Sa
         player.seekTo(startPosition)
         player.playWhenReady = playWhenReady
         player.prepare()
-        _hasVideoLoaded.value = true // Update state when media item is set
+        _hasVideoLoaded.value = true
     }
 
     private fun savePlayerState() {
@@ -73,6 +73,6 @@ class PlayerViewModel(application: Application, private val savedStateHandle: Sa
         super.onCleared()
         savePlayerState()
         player.release()
-        _hasVideoLoaded.value = false // Reset state when ViewModel is cleared
+        _hasVideoLoaded.value = false
     }
 }
