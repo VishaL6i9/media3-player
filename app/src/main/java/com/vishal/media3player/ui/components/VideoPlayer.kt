@@ -1,34 +1,30 @@
 package com.vishal.media3player.ui.components
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
-import com.vishal.media3player.player.PlayerController
 
 @Composable
 fun VideoPlayer(
-    uri: String,
+    player: ExoPlayer,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
-    val playerController = remember { PlayerController(context) }
-
-    DisposableEffect(Unit) {
-        playerController.play(uri)
-        onDispose { playerController.release() }
-    }
-
     AndroidView(
         factory = { ctx ->
             PlayerView(ctx).apply {
-                player = playerController.player
+                this.player = player
                 useController = true
+                // Optional: If you want the video to always fill the screen and be cropped if aspect ratios don't match, use RESIZE_MODE_ZOOM.
+                // Otherwise, RESIZE_MODE_FIT (default) maintains aspect ratio with black bars.
+                // resizeMode = com.google.android.exoplayer2.ui.AspectRatioFrameLayout.RESIZE_MODE_ZOOM
             }
         },
-        modifier = modifier
+        update = { playerView ->
+            playerView.player = player
+        },
+        modifier = modifier.fillMaxSize()
     )
 }
