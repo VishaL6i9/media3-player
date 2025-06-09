@@ -6,8 +6,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
-import kotlinx.coroutines.flow.MutableStateFlow // Import
-import kotlinx.coroutines.flow.StateFlow // Import
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 private const val KEY_CURRENT_URI = "current_uri"
 private const val KEY_PLAYBACK_POSITION = "playback_position"
@@ -21,9 +21,10 @@ class PlayerViewModel(application: Application, private val savedStateHandle: Sa
     private var playbackPosition: Long = savedStateHandle.get(KEY_PLAYBACK_POSITION) ?: 0L
     private var playWhenReady: Boolean = savedStateHandle.get(KEY_PLAY_WHEN_READY) ?: true
 
-    // New StateFlow to indicate if a video is loaded
     private val _hasVideoLoaded = MutableStateFlow(currentMediaUri != null)
     val hasVideoLoaded: StateFlow<Boolean> = _hasVideoLoaded
+    private val _areControlsVisible = MutableStateFlow(true)
+    val areControlsVisible: StateFlow<Boolean> = _areControlsVisible
 
     init {
         currentMediaUri?.let { uri ->
@@ -33,6 +34,9 @@ class PlayerViewModel(application: Application, private val savedStateHandle: Sa
             player.playWhenReady = playWhenReady
             player.prepare()
             _hasVideoLoaded.value = true
+        } ?: run {
+            player.prepare()
+            _hasVideoLoaded.value = false
         }
     }
 
@@ -61,6 +65,10 @@ class PlayerViewModel(application: Application, private val savedStateHandle: Sa
         player.playWhenReady = playWhenReady
         player.prepare()
         _hasVideoLoaded.value = true
+    }
+
+    fun setControlsVisibility(visible: Boolean) {
+        _areControlsVisible.value = visible
     }
 
     private fun savePlayerState() {
