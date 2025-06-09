@@ -95,11 +95,8 @@ dependencies {
         implementation("androidx.media3:media3-ui-compose:$media3_version")
         // Common functionality used across multiple media libraries
         implementation("androidx.media3:media3-common:$media3_version")
-        // Common Kotlin-specific functionality
-        implementation("androidx.media3:media3-common-ktx:$media3_version")
+
         implementation ("androidx.lifecycle:lifecycle-viewmodel-compose")
-        implementation ("androidx.lifecycle:lifecycle-runtime-ktx")
-        implementation ("androidx.lifecycle:lifecycle-livedata-ktx")
         implementation ("androidx.compose.material:material-icons-extended")
 
 }
