@@ -23,6 +23,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FolderOpen
@@ -102,6 +103,7 @@ fun VideoScreen(
             exit = fadeOut(animationSpec = tween(durationMillis = 300))
         ) {
             if (!hasVideoLoaded) {
+
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
